@@ -4,6 +4,7 @@ const appointmentRouter = require('./routes/appointment')
 const rateLimiter = require('./ratelimiting/ratelimiter')
 const helmet = require('helmet')
 const auth0 = require('./auth/auth0')
+// const cronMiddleware = require('./cronjob/cron-job')
 const logger = require('./logger/logger')
 const mongodbConnect = require('./db/mongodb')
 const { requiresAuth } = require('express-openid-connect')
@@ -16,6 +17,7 @@ const app = express()
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 app.use(auth0)
+// app.use(cronMiddleware)
 app.use('/api/v1/appointment', appointmentRouter)
 
 // protected routes
@@ -26,7 +28,7 @@ app.use('/api/v1/appointment/userAppointment', requiresAuth(), appointmentRouter
 
 /// error handler middleware
 app.use((err, req, res, next) => {
-  logger.error(err.message)
+  console.log(err.message)
   res.status(500).send({
       error: 'An unexpected error occurred'
   })
@@ -51,5 +53,5 @@ app.get('/', requiresAuth(), (req, res) => {
 
 
 app.listen(config.PORT, () => {
-    logger.info(`server is listening on port: ${config.PORT}...`);
+    console.log(`server is listening on port: ${config.PORT}...`);
 })
